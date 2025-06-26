@@ -101,6 +101,8 @@ $(document).ready(function(){
                         paginationHtml += `<button class="page-btn" data-page=${j}>${j}</button>`
                     }
                     $('.pagination').html(paginationHtml);
+                } else {
+                    $('#user-table-body').html('<tr><td colspan="4">No records found</td></tr>');
                 }
             }
         });
@@ -110,6 +112,42 @@ $(document).ready(function(){
         const page = $(this).data('page');
         fetchRecords(page);
     });
+
+    // Search functionality
+    $(document).on('keyup', '#search', function(){
+        const query = $(this).val();
+        searchRecords(query);
+    });
+
+    function searchRecords(query){
+        $.ajax({
+            type: "POST",
+            url: "/action/search.php",
+            data: {search : query},
+            dataType: "json",
+            success: function (response) {
+                if(response.status === 'success'){
+                    let html = '';
+                    let i = 1;
+                    $.each(response.data, function (index, user) { 
+                       html += `<tr>
+                            <td>${i++}</td>
+                            <td>${user.name}</td>
+                            <td>${user.email}</td>
+                            <td>
+                                <span class="edit-action" style="color:#2c6fff;cursor:pointer;text-decoration:underline;" data-id="${user.id}" data-name="${user.name}" data-email="${user.email}">Edit</span>
+                                |
+                                <span class="delete-action" style="color:#e74c3c;cursor:pointer;text-decoration:underline;" data-id="${user.id}">Delete</span>
+                            </td>
+                        </tr>`;
+                    });
+                    $('#user-table-body').html(html);
+                } else {
+                    $('#user-table-body').html('<tr><td colspan="4">No records found</td></tr>');
+                }
+            }
+        });
+    }
     
     // Initial fetch
     fetchRecords();
