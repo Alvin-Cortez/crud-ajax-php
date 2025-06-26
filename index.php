@@ -11,14 +11,13 @@
     <div class="container">
         <h1>CRUD w Ajax</h1>
         <p>Simple CRUD application using Ajax</p>
-        <div class="buttons">
+        <div class="actions">
+            <input type="text" placeholder="Search here..." id="search">
             <button id="add">Add</button>
-            <button id="delete">Delete</button>
         </div>
         <table >
             <thead>
                 <tr>
-                    <th><input type="checkbox"></th>
                     <th>#</th>
                     <th>Name</th>
                     <th>Email</th>
@@ -30,11 +29,6 @@
             </tbody>
         </table>
         <div class="pagination">
-            <button class="page-btn" disabled>&laquo;</button>
-            <button class="page-btn active">1</button>
-            <button class="page-btn">2</button>
-            <button class="page-btn">3</button>
-            <button class="page-btn">&raquo;</button>
         </div>
     </div>
 
@@ -43,7 +37,7 @@
         <div class="modal-content">
             <span class="modal-close" data-modal="modal-add">&times;</span>
             <h2>Add User</h2>
-            <form id="form-add" action="add.php" method="post">
+            <form id="form-add" method="post">
                 <label>Name</label>
                 <input type="text" name="name" required>
                 <label>Email</label>
@@ -62,14 +56,14 @@
             <span class="modal-close" data-modal="modal-update">&times;</span>
             <h2>Update User</h2>
             <form id="form-update">
-            <label>Name</label>
-            <input type="text" name="name" required>
-            <label>Email</label>
-            <input type="email" name="email" required>
-            <div class="modal-actions">
-                <button type="submit" class="modal-btn primary">Update</button>
-                <button type="button" class="modal-btn" data-modal="modal-update">Cancel</button>
-            </div>
+                <label>Name</label>
+                <input type="text" name="name" id="update-name">
+                <label>Email</label>
+                <input type="email" name="email" id="update-email">
+                <div class="modal-actions">
+                    <button type="submit" class="modal-btn primary">Update</button>
+                    <button type="button" class="modal-btn" data-modal="modal-update">Cancel</button>
+                </div>
             </form>
         </div>
     </div>
@@ -80,19 +74,6 @@
             <span class="modal-close" data-modal="modal-delete">&times;</span>
             <h2>Delete User</h2>
             <p>Are you sure you want to delete this user?</p>
-            <div class="modal-actions">
-            <button id="confirm-delete" class="modal-btn danger">Delete</button>
-            <button type="button" class="modal-btn" data-modal="modal-delete">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete All modal -->
-    <div id="modal-delete-all" class="modal">
-        <div class="modal-content">
-            <span class="modal-close" data-modal="modal-delete-all">&times;</span>
-            <h2>Delete User</h2>
-            <p>Are you sure you want to delete those user?</p>
             <div class="modal-actions">
             <button id="confirm-delete" class="modal-btn danger">Delete</button>
             <button type="button" class="modal-btn" data-modal="modal-delete">Cancel</button>

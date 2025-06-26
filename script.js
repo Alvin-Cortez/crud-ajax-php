@@ -7,16 +7,12 @@ $(document).ready(function(){
     // Show Edit Modal (delegated)
     $(document).on('click', '.edit-action', function() {
         const id = $(this).data('id');
-        // Fetch user data by id (Ajax) and fill the form
-        $.get('fetch.php', function(users){
-            users = JSON.parse(users);
-            const user = users.find(u => u.id == id);
-            if(user){
-                $('#modal-update input[name="name"]').val(user.name);
-                $('#modal-update input[name="email"]').val(user.email);
-                $('#modal-update').data('id', id).addClass('show');
-            }
-        });
+        const name = $(this).data('name');
+        const email = $(this).data('email');
+
+        $('#update-name').val(name);
+        $('#update-email').val(email);
+        $('#modal-update').data('id', id).addClass('show');
     });
 
     // Show Delete Modal (delegated)
@@ -34,7 +30,7 @@ $(document).ready(function(){
     $('#form-add').on('submit', function(e){
         e.preventDefault();
         $.ajax({
-            url: 'add.php',
+            url: '/action/add.php',
             type: 'POST',
             data: $(this).serialize(),
             success: function(response){
@@ -50,7 +46,7 @@ $(document).ready(function(){
         e.preventDefault();
         const id = $('#modal-update').data('id');
         $.ajax({
-            url: 'update.php',
+            url: '/action/update.php',
             type: 'POST',
             data: $(this).serialize() + '&id=' + id,
             success: function(response){
@@ -64,7 +60,7 @@ $(document).ready(function(){
     $('#confirm-delete').on('click', function(){
         const id = $('#modal-delete').data('id');
         $.ajax({
-            url: 'delete.php',
+            url: '/action/delete.php',
             type: 'POST',
             data: {id: id},
             success: function(response){
@@ -75,31 +71,46 @@ $(document).ready(function(){
     });
 
     // Fetch records function
-    function fetchRecords() {
+    function fetchRecords(page = 1) {
         $.ajax({
-            url: 'fetch.php',
-            type: 'GET',
+            url: '/action/fetch.php',
+            type: 'POST',
+            data: {page:page},
             dataType: 'json',
-            success: function(data) {
-                let rows = '';
-                $.each(data, function(index, record) {
-                    rows += `<tr>
-                        <td><input type="checkbox" class="record-checkbox" data-id="${record.id}"></td>
-                        <td>${record.id}</td>
-                        <td>${record.name}</td>
-                        <td>${record.email}</td>
-                        <td>
-                            <span class="edit-action" style="color:#2c6fff;cursor:pointer;text-decoration:underline;" data-id="${record.id}">Edit</span>
-                            |
-                            <span class="delete-action" style="color:#e74c3c;cursor:pointer;text-decoration:underline;" data-id="${record.id}">Delete</span>
-                        </td>
-                    </tr>`;
-                });
-                $('#user-table-body').html(rows);
+            success: function(response){
+                if(response.status === 'success'){
+                    let html = '';
+                    let i = 1;
+                    $.each(response.data, function(index, record) {
+                        html += `<tr>
+                            <td>${i++}</td>
+                            <td>${record.name}</td>
+                            <td>${record.email}</td>
+                            <td>
+                                <span class="edit-action" style="color:#2c6fff;cursor:pointer;text-decoration:underline;" data-id="${record.id}" data-name="${record.name}" data-email="${record.email}">Edit</span>
+                                |
+                                <span class="delete-action" style="color:#e74c3c;cursor:pointer;text-decoration:underline;" data-id="${record.id}">Delete</span>
+                            </td>
+                        </tr>`;
+                    });
+                    $('#user-table-body').html(html);
+
+                    //Pagination
+                    let paginationHtml = '';
+                    for(let j = 1; j <= response.totalPages; j++){
+                        paginationHtml += `<button class="page-btn" data-page=${j}>${j}</button>`
+                    }
+                    $('.pagination').html(paginationHtml);
+                }
             }
         });
     }
 
+    $(document).on('click', '.page-btn', function() {
+        const page = $(this).data('page');
+        fetchRecords(page);
+    });
+    
     // Initial fetch
     fetchRecords();
 });
